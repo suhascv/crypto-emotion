@@ -1,21 +1,26 @@
 # crypto-emotion
 
 - install dependencies
-```
-pip install requirements.txt
 
 ```
+pip install -r requirements.txt
+
+```
+
 - run
+
 ```
 python3 tweet_scraper.py
 ```
+
 - sample input
+
 ```
 enter search term  : ethereum
-enter min replies  : 10
-enter min retweets  : 10
-enter min likes  : 20
-enter end date in yyyy-mm-dd  : 2021-07-01
-enter start date in yyyy-mm-dd  : 2018-01-01    
-enter output file path : ethereum.json
+enter min replies  : 0
+enter min retweets  : 0
+enter min likes  : 5
+enter year: yyyy : 2020
+enter number of months: 12
+enter output file path : ./data/ethereum2020.json
 ```
