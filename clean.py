@@ -5,6 +5,13 @@ import string
 from emosent import get_emoji_sentiment_rank
 import json
 
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize
+  
+ps = PorterStemmer()
+
+
+
 def clean_tweet(tweets):
     cleaned_tweets=[]
     for tweet in tweets:
@@ -72,6 +79,7 @@ def get_features(tweets):
     has_frequent_positives=[]
     has_frequent_negatives=[]
     emoji_sentiments=[]
+
     for tweet in tweets:
         tokens =re.findall(r"[\w']+",tweet.lower())
         emoji_sentiments.append(emoji_score(tweet))
@@ -79,33 +87,13 @@ def get_features(tweets):
         has_negatives.append(has_feature(tokens, negative_words))
         has_frequent_positives.append(has_feature(tokens, frequent_positives))
         has_frequent_negatives.append(has_feature(tokens, frequent_negatives))
-        """
-        for token in tokens:
-            r=re.compile(f'.*{token}.*')
-            
-            #if any(r.match(t) for t in positive_words):
-            if token in positive_words:
-                has_positives.append(True)
-                flag=True
-                break
-            
-        if not flag:
-            has_positives.append(False)
-
-        flag=False
-        for token in tokens:
-            r=re.compile(f'.*{token}.*')
-            #if any(r.match(t) for t in negative_words):
-            if token in negative_words:
-                has_negatives.append(True)
-                flag=True
-                break
-        if not flag:    
-            has_negatives.append(False)
-        """
         
             
-    return has_negatives,has_positives,has_frequent_positives,has_frequent_negatives,emoji_sentiments
+    return {'has_negatives':has_negatives,
+            'has_positives':has_positives,
+            'has_frequent_positives':has_frequent_positives,
+            'has_frequent_negatives':has_frequent_negatives,
+            'emoji_sentiments':emoji_sentiments}
             
 
 
@@ -141,7 +129,13 @@ df['Tweet']= clean_tweet(df['Tweet'])
 
 
 print(df.columns)
-df['has_negatives'],df['has_positives'],df['has_frequent_positives'],df['has_frequent_negatives'],df['emoji_sentiments']=get_features(df['Tweet'])
+features=get_features(df['Tweet'])
+
+df['has_negatives']=features['has_negatives']
+df['has_positives']=features['has_positives']
+df['has_frequent_positives']=features['has_frequent_positives']
+df['has_frequent_negatives']=features['has_frequent_negatives']
+df['emoji_sentiments']=features['emoji_sentiments']
 
 positive=df[df['Sentiment']=="positive"]
 negative=df[df['Sentiment']=="negative"]
@@ -162,9 +156,9 @@ neutral=df[df['Sentiment']=="neutral"]
 print(df.head(15))
 print('unique emoji states',df['emoji_sentiments'].unique())
 
+
 with open('./data/train.csv','w') as out_file:
     out_file.write(df.to_csv(index=False))
-
 df.to_json('./data/train.json',orient='index')
 
 """

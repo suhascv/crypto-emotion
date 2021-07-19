@@ -34,7 +34,7 @@ for feature in data.columns:
             for c in class_labels:
                 query1=f'{label}=="{c}"'
                 query2=f'({label}=="{c}") and ({feature}=="{item}")'
-                item_dict[c]=math.log((1+get_count(query2)/get_count(query1)))
+                item_dict[c]=math.log((1+get_count(query2))/get_count(query1))
             feature_dict[str(item)]=item_dict
         prior_probablities[feature]=feature_dict
 
