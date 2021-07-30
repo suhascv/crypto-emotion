@@ -111,7 +111,7 @@ predicted = MNB.predict(X_test)
 accuracy_score = metrics.accuracy_score(predicted, Y_test)
 
 predict_emotion('./data/bitcoin2020.json','./data/bitcoinP2020.csv','app/data/bitcoin/m2020.json')
-
+predict_emotion('./data/ethereum2020.json','./data/ethereumP2020.csv','app/data/ethereum/m2020.json')
 
 
 print(str('{:04.2f}'.format(accuracy_score*100))+'%')

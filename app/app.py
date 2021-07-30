@@ -11,12 +11,15 @@ def home():
 
 @app.route("/crypto/<crypto>")
 def choose(crypto):
+    months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
     try:
         fp = open(f'./data/{crypto}/m2020.json','r')
         data = json.load(fp)
-        return render_template("choice.html",crypto=data)
+        data['months']=months
+        data['currency']=crypto.capitalize()
+        return render_template("choice.html",data=data)
     except:
-        return render_template("choice.html",crypto=crypto) 
+        return render_template("choice.html",data={"message":"not found"}) 
 
 
 if __name__=="__main__":
