@@ -1,0 +1,29 @@
+<!Doctype html>
+<html>
+
+<head>
+    <title>Crypto Emotion</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='home.css') }}">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <a href="/"><span class="c-primary"> CryptoEmotion </span></a>
+    </header>
+    <div class="body">
+        {% block content %}
+        {% endblock%}
+    </div>
+    <footer>
+
+    </footer>
+    <script>
+        feather.replace()
+    </script>
+</body>
+
+</html>
