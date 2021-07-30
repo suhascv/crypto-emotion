@@ -4,6 +4,7 @@ import math
 def get_count(query):
     return len(data.query(query)[label])
 
+
 class_probablities = {}
 prior_probablities={}
 
@@ -17,14 +18,15 @@ test_data = df.tail(test_len)
 class_labels=data[label].unique()
 
 
+print(df.head())
+print("\n\n")
 
 #caclculate class probablities
 for item in class_labels:
     class_probablities[item]=get_count(f'{label}=="{item}"')/total
 
-print(data.head())
-    
-print(class_probablities)
+
+print('class probablities', class_probablities,'\n\n')
 
 for feature in data.columns:
     if feature not in ['Tweet','Sentiment']:
@@ -34,7 +36,7 @@ for feature in data.columns:
             for c in class_labels:
                 query1=f'{label}=="{c}"'
                 query2=f'({label}=="{c}") and ({feature}=="{item}")'
-                item_dict[c]=math.log((1+get_count(query2))/get_count(query1))
+                item_dict[c]=math.log((1+get_count(query2))/(6+get_count(query1)))
             feature_dict[str(item)]=item_dict
         prior_probablities[feature]=feature_dict
 
@@ -65,4 +67,4 @@ for index,row in test_data.iterrows():
     if row[label]==choice:
         correct+=1
 
-print(correct,test_len)
+print('\nAccuracy ',round(correct*100/test_len,2),'%')

@@ -13,8 +13,8 @@ def home():
 def choose(crypto):
     try:
         fp = open(f'./data/{crypto}/m2020.json','r')
-
-        return render_template("choice.html",crypto=)
+        data = json.load(fp)
+        return render_template("choice.html",crypto=data)
     except:
         return render_template("choice.html",crypto=crypto) 
 

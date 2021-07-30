@@ -4,12 +4,20 @@ from collections import Counter
 import string
 from emosent import get_emoji_sentiment_rank
 import json
-
 from nltk.stem import PorterStemmer
 from nltk.tokenize import word_tokenize
+from better_profanity import profanity
+
   
 ps = PorterStemmer()
 
+
+
+def get_stemmed(tokens):
+    stemmed_words=set()
+    for token in tokens:
+        stemmed_words.add(ps.stem(token))
+    return stemmed_words
 
 
 def clean_tweet(tweets):
@@ -72,6 +80,12 @@ def has_feature(tokens,words):
             break
     return flag
         
+def check_profanity(tweet):
+    if profanity.contains_profanity(tweet):
+        return 'yes'
+    else:
+        return 'no'
+
 
 def get_features(tweets):
     has_positives=[]
@@ -79,6 +93,7 @@ def get_features(tweets):
     has_frequent_positives=[]
     has_frequent_negatives=[]
     emoji_sentiments=[]
+    has_profanity=[]
 
     for tweet in tweets:
         tokens =re.findall(r"[\w']+",tweet.lower())
@@ -87,18 +102,21 @@ def get_features(tweets):
         has_negatives.append(has_feature(tokens, negative_words))
         has_frequent_positives.append(has_feature(tokens, frequent_positives))
         has_frequent_negatives.append(has_feature(tokens, frequent_negatives))
-        
+        #has_profanity.append(check_profanity(tweet))
             
     return {'has_negatives':has_negatives,
             'has_positives':has_positives,
             'has_frequent_positives':has_frequent_positives,
             'has_frequent_negatives':has_frequent_negatives,
-            'emoji_sentiments':emoji_sentiments}
+            'emoji_sentiments':emoji_sentiments,
+            'has_profanity':has_profanity
+            }
             
 
 
 with open('./data/stopword.txt','r') as stop_file:
     stopwords = set(stop_file.read().split('\n'))
+
 
 with open('./data/positive.txt','r') as positive_file:
     positive_words = set(positive_file.read().split('\n'))
@@ -111,6 +129,7 @@ with open('./data/frequent_positive.txt','r') as frequent_pos_file:
 
 with open('./data/frequent_negative.txt','r') as frequent_neg_file:
     frequent_negatives = set(frequent_neg_file.read().split('\n'))
+
 
 df = pd.read_csv("./data/raw.csv")
 df = df.dropna(subset=["Tweet","Sentiment","sent_score"]) 
@@ -136,6 +155,7 @@ df['has_positives']=features['has_positives']
 df['has_frequent_positives']=features['has_frequent_positives']
 df['has_frequent_negatives']=features['has_frequent_negatives']
 df['emoji_sentiments']=features['emoji_sentiments']
+#df['has_profanity']=features['has_profanity']
 
 positive=df[df['Sentiment']=="positive"]
 negative=df[df['Sentiment']=="negative"]

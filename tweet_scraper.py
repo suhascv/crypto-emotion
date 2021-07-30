@@ -109,7 +109,7 @@ def get_tweets(query):
         prev=0
     
         driver.get(custom_url)
-        while identity < 40:   
+        while identity < 100:   
             try:
                 prev=identity
                 response=get_page(custom_url)
