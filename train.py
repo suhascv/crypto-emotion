@@ -8,6 +8,7 @@ from sklearn import metrics
 import numpy as np
 import matplotlib.pyplot as plt
 import json
+import seaborn as sns
 
 
 def preprocess_data(dataset):
@@ -49,13 +50,22 @@ def bucket_months(sdata,pdata):
     for i in range(1,13):
         month_data = sdata[pd.to_datetime(sdata['time']).dt.month == i]
         month_price = pdata[pd.to_datetime(pdata['Date']).dt.month == i]
-        buckets['sentiment'].append(month_data['sent_score'].sum())
-        buckets['price'].append(month_price['Closing Price (USD)'].sum())
+        buckets['sentiment'].append(month_data['sent_score'].sum()/month_data['sent_score'].count())
+        buckets['price'].append(month_price['Closing Price (USD)'].sum()/month_price['Closing Price (USD)'].count())
     buckets['normalizedPrice'] = normalize(max(buckets['price']), buckets['price'])
     buckets['normalizedSentiment'] = normalize(max(buckets['sentiment']), buckets['sentiment'])
 
     out = pd.DataFrame.from_dict(buckets)
     out.index=months
+    x,y =out['sentiment'],out['price']
+    xy = out[['sentiment','price']]
+    print(xy.corr())
+    print(x.corr(y))
+
+    reg=sns.lmplot(x='sentiment',y='price',data=xy,fit_reg=True)
+    reg.set(ylim=(0,None))
+
+    
     out = out.drop(['sentiment','price'],axis=1)
     out.plot(kind='line',title='monthly price vs social sentiment trend 2020')
     plt.xlabel('month')
@@ -64,8 +74,22 @@ def bucket_months(sdata,pdata):
 
     return buckets
 
+"""
 
-
+def correlarte(sdata,pdata,year):
+    sentiments=[]
+    bdata = pdata[['Date','Closing Price (USD)']]
+    for d in pdata['Date']:
+        day_sentiment = sdata[pd.to_datetime(sdata['time']).dt.day == pd.to_datetime(pdata['Date']).dt.day]
+        print(day_sentiment)
+        if day_sentiment['sent_score'].count()>0:
+            sentiments.append(day_sentiment['sent_score'].sum()/day_sentiment['sent_score'].count())
+        else:
+            sentiments.append(None)
+    
+    print(sentiments)
+    
+"""
 
 def predict_emotion(file_in,price_file,file_out):
     data = pd.read_json(file_in)
@@ -79,7 +103,7 @@ def predict_emotion(file_in,price_file,file_out):
     buckets=bucket_months(data,pdata)
     fp = open(file_out,'w')
     json.dump(buckets,fp)
-    
+    #correlarte(data, pdata, 2020)
     #bucket_weeks(data, pdata)
     
 
